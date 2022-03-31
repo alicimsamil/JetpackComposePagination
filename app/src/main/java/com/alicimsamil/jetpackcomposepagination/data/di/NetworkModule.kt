@@ -12,18 +12,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
-
     @Singleton
     @Provides
     fun provideRetrofit(
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
-
         return Retrofit.Builder()
             .addConverterFactory(gsonConverterFactory)
             .baseUrl("https://newsapi.org")
             .build()
-
     }
 
     @Singleton
@@ -35,10 +32,6 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideNewsService(retrofit: Retrofit): NewsService {
-
         return retrofit.create(NewsService::class.java)
-
     }
-
-
 }
