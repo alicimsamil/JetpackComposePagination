@@ -1,9 +1,10 @@
-package com.alicimsamil.jetpackcomposepagination.list
+package com.alicimsamil.jetpackcomposepagination.ui.list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -14,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
@@ -24,27 +26,46 @@ import com.alicimsamil.jetpackcomposepagination.R
 @Composable
 fun ListScreen() {
     val viewModel: ListViewModel = hiltViewModel()
-    val news = viewModel.news.collectAsLazyPagingItems()
+    val newsList = viewModel.news.collectAsLazyPagingItems()
 
-    Scaffold() {
-        LazyColumn {
-            items(news) { news ->
-                NewsRow(
-                    listScreenModel = ListScreenModel(
-                        news?.title,
-                        news?.content,
-                        news?.urlToImage
-                    )
+    LazyColumn {
+        items(newsList) { news ->
+            NewsRow(
+                listScreenModel = ListScreenModel(
+                    news?.title,
+                    news?.content,
+                    news?.urlToImage
                 )
+            )
+        }
+        newsList.apply {
+            when {
+                loadState.refresh is LoadState.Loading -> {
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .wrapContentSize(Alignment.Center)
+                        )
+                    }
+                }
+                loadState.append is LoadState.Loading -> {
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
             }
         }
     }
-
 }
+
 
 @Composable
 fun NewsRow(listScreenModel: ListScreenModel) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
